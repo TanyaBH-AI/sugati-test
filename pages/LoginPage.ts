@@ -70,7 +70,7 @@ export class LoginPage {
       const sessionId = await this.getSalesforceSessionId(username, password);
       // frontdoor.jsp exchanges a valid session ID for a browser session — no MFA prompt
       await this.page.goto(`${BASE_URL}/secur/frontdoor.jsp?sid=${sessionId}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'load',
         timeout: 60000,
       });
     } catch {

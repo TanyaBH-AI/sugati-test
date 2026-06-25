@@ -32,17 +32,17 @@ export class ClientInfoPage {
   }
 
   async clickSearch(): Promise<void> {
-    await this.page.locator('button:has-text("Search")').click();
-    await expect(this.page.locator('button:has-text("Save & Close")')).toBeVisible({ timeout: 15000 });
+    await this.page.getByRole('button', { name: 'Search', exact: true }).click();
+    await expect(this.page.getByRole('button', { name: 'Save & Close', exact: true })).toBeVisible({ timeout: 15000 });
   }
 
   async clickSaveAndClose(): Promise<void> {
-    await this.page.locator('button:has-text("Save & Close")').click();
-    await expect(this.page.locator('button:has-text("Save & Next")')).toBeVisible({ timeout: 15000 });
+    await this.page.getByRole('button', { name: 'Save & Close', exact: true }).click();
+    await expect(this.page.getByRole('button', { name: 'Save & Next', exact: true })).toBeVisible({ timeout: 15000 });
   }
 
   async clickSaveAndNext(): Promise<void> {
-    await this.page.locator('button:has-text("Save & Next")').click();
+    await this.page.getByRole('button', { name: 'Save & Next', exact: true }).click();
     await expect(this.page.locator('input[value*="Generic" i]')).toBeVisible({ timeout: 30000 });
   }
 }

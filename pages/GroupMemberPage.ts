@@ -12,7 +12,7 @@ export class GroupMemberPage {
   }
 
   async clickSaveAndGoToOpportunity(): Promise<void> {
-    await this.page.locator('button:has-text("Save & Go to Opportunity")').click();
+    await this.page.getByRole('button', { name: 'Save & Go to Opportunity', exact: true }).click();
     await this.page.waitForURL(/\/Opportunity\//, { timeout: 30000 });
   }
 }

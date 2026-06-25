@@ -46,7 +46,7 @@ export class OpportunityFormPage {
   }
 
   async clickSaveAndNext(): Promise<void> {
-    await this.page.locator('button:has-text("Save & Next")').click();
+    await this.page.getByRole('button', { name: 'Save & Next', exact: true }).click();
     await expect(this.page.getByText('Group Members', { exact: true })).toBeVisible({ timeout: 30000 });
   }
 }

@@ -8,7 +8,7 @@ export class OpportunityFormPage {
   }
 
   async assertPageLoaded(): Promise<void> {
-    await expect(this.page.getByText('Holiday Type').first()).toBeVisible({ timeout: 15000 });
+    await expect(this.page.getByText('Holiday Type', { exact: true }).first()).toBeVisible({ timeout: 15000 });
   }
 
   async selectHolidayType(value: string): Promise<void> {

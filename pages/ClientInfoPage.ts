@@ -8,7 +8,13 @@ export class ClientInfoPage {
   }
 
   async fillSalutation(value: string): Promise<void> {
-    const salutationCombobox = this.page.locator('lightning-combobox').filter({ hasText: /salutation/i });
+    // In Salesforce LWC, the "Salutation" label lives in the parent .slds-form-element wrapper,
+    // NOT inside the lightning-combobox shadow DOM — filter on the wrapper, then drill in.
+    const salutationCombobox = this.page
+      .locator('.slds-form-element')
+      .filter({ hasText: /\bsalutation\b/i })
+      .locator('lightning-combobox')
+      .first();
     await expect(salutationCombobox).toBeVisible({ timeout: 15000 });
     await salutationCombobox.click();
     const option = this.page.locator(`[role="option"]:has-text("${value}")`);

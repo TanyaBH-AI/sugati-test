@@ -11,7 +11,8 @@ export class ClientInfoPage {
     const salutationSelect = this.page.locator('select').first();
     await expect(salutationSelect).toBeVisible({ timeout: 15000 });
     // Wait for options to populate before selecting (Salesforce loads them async)
-    await salutationSelect.locator('option', { hasText: value }).waitFor({ timeout: 15000 });
+    // Use exact text match to avoid substring collisions (e.g. "Mr" matching "Mrs")
+    await salutationSelect.locator('option').filter({ hasText: new RegExp(`^${value}$`) }).first().waitFor({ timeout: 15000 });
     await salutationSelect.selectOption({ label: value });
   }
 

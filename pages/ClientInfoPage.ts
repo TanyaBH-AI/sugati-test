@@ -32,7 +32,7 @@ export class ClientInfoPage {
   }
 
   async clickSearch(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Search', exact: true }).click();
+    await this.page.locator('button.search-button').click();
     await expect(this.page.getByRole('button', { name: 'Save & Close', exact: true })).toBeVisible({ timeout: 15000 });
   }
 

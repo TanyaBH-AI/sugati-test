@@ -30,11 +30,11 @@ export class ClientInfoPage {
   async clickSearch(): Promise<void> {
     const searchButtons = this.page.getByRole('button', { name: 'Search', exact: true });
     await searchButtons.last().click();
-    await expect(
-      this.page.getByRole('button', { name: 'Save & Close', exact: true })
-        .or(this.page.getByRole('button', { name: 'Save & Next', exact: true })
-        .or(this.page.getByRole('button', { name: 'Clear Search', exact: true })))
-    ).toBeVisible({ timeout: 15000 });
+    await Promise.race([
+      this.page.getByRole('button', { name: 'Save & Close', exact: true }).waitFor({ state: 'visible', timeout: 15000 }),
+      this.page.getByRole('button', { name: 'Save & Next', exact: true }).waitFor({ state: 'visible', timeout: 15000 }),
+      this.page.getByRole('button', { name: 'Clear Search', exact: true }).waitFor({ state: 'visible', timeout: 15000 }),
+    ]);
   }
 
   async clickSaveAndClose(): Promise<void> {

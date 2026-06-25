@@ -56,10 +56,9 @@ test.describe('Create Holiday Enquiry (Individual)', () => {
     await holidayEnquiryPage.selectIndividual();
 
     // Step 4: Verify Client Information form is displayed
-    await expect(page.locator('select[name="salutation"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[type="text"]').first()).toBeVisible({ timeout: 15000 });
 
-    // Steps 5-7: Fill client information
-    await clientInfoPage.fillSalutation('Mr');
+    // Steps 5-6: Fill client information (salutation skipped per user request)
     const firstName = randomName();
     const lastName = randomName();
     await clientInfoPage.fillFirstName(firstName);

@@ -44,6 +44,6 @@ export class ClientInfoPage {
 
   async clickSaveAndNext(): Promise<void> {
     await this.page.getByRole('button', { name: 'Save & Next', exact: true }).click();
-    await expect(this.page.getByText('Departure Date')).toBeVisible({ timeout: 30000 });
+    await expect(this.page.getByText('Departure Date').first()).toBeVisible({ timeout: 30000 });
   }
 }

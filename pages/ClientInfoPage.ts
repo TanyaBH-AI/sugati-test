@@ -10,7 +10,9 @@ export class ClientInfoPage {
   async fillSalutation(value: string): Promise<void> {
     const salutationSelect = this.page.locator('select').first();
     await expect(salutationSelect).toBeVisible({ timeout: 15000 });
-    await salutationSelect.selectOption(value);
+    // Wait for options to populate before selecting (Salesforce loads them async)
+    await salutationSelect.locator('option', { hasText: value }).waitFor({ timeout: 15000 });
+    await salutationSelect.selectOption({ label: value });
   }
 
   async fillFirstName(name: string): Promise<void> {

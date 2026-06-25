@@ -9,6 +9,13 @@ import { OpportunityRecordPage } from '../../pages/OpportunityRecordPage';
 const VALID_USERNAME = process.env.STAGING_USER || 'yogesh.kumar@bughunters.io';
 const VALID_PASSWORD = process.env.STAGING_PASSWORD || 'Bughunters@1234567890';
 
+function randomName(): string {
+  const alpha = 'abcdefghijklmnopqrstuvwxyz';
+  const letters = Array.from({ length: 4 }, () => alpha[Math.floor(Math.random() * alpha.length)]).join('');
+  const digits = Math.floor(10000 + Math.random() * 90000);
+  return `${letters}${digits}`;
+}
+
 function getFutureDate(daysFromNow: number): string {
   const date = new Date();
   date.setDate(date.getDate() + daysFromNow);
@@ -53,8 +60,10 @@ test.describe('Create Holiday Enquiry (Individual)', () => {
 
     // Steps 5-7: Fill client information
     await clientInfoPage.fillSalutation('Mr');
-    await clientInfoPage.fillFirstName('TEST93166780');
-    await clientInfoPage.fillLastName('Art27260');
+    const firstName = randomName();
+    const lastName = randomName();
+    await clientInfoPage.fillFirstName(firstName);
+    await clientInfoPage.fillLastName(lastName);
 
     // Step 8: Click Search
     await clientInfoPage.clickSearch();

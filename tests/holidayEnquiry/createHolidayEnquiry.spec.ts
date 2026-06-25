@@ -67,8 +67,11 @@ test.describe('Create Holiday Enquiry (Individual)', () => {
     // Step 8: Click Search
     await clientInfoPage.clickSearch();
 
-    // Step 9: Click Save & Close
-    await clientInfoPage.clickSaveAndClose();
+    // Step 9: Click Save & Close (only if visible — random names may not match existing clients)
+    const saveAndCloseBtn = page.getByRole('button', { name: 'Save & Close', exact: true });
+    if (await saveAndCloseBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await clientInfoPage.clickSaveAndClose();
+    }
 
     // Step 10: Click Save & Next
     await clientInfoPage.clickSaveAndNext();

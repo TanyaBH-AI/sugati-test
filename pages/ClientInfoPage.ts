@@ -32,9 +32,16 @@ export class ClientInfoPage {
   }
 
   async clickSearch(): Promise<void> {
-    // The form's Search button is the last one on the page (below the header global search)
-    await this.page.getByRole('button', { name: 'Search', exact: true }).last().click();
-    await expect(this.page.getByRole('button', { name: 'Save & Close', exact: true })).toBeVisible({ timeout: 15000 });
+    // Scope to the form button row (contains "Add Details") to avoid Salesforce global search
+    const formButtonRow = this.page.locator('div').filter({
+      has: this.page.getByRole('button', { name: 'Add Details' })
+    }).first();
+    await formButtonRow.getByRole('button', { name: 'Search', exact: true }).click();
+    // After search, wait for either Save & Close or Save & Next (depends on match results)
+    await expect(
+      this.page.getByRole('button', { name: 'Save & Close', exact: true })
+        .or(this.page.getByRole('button', { name: 'Save & Next', exact: true }))
+    ).toBeVisible({ timeout: 15000 });
   }
 
   async clickSaveAndClose(): Promise<void> {

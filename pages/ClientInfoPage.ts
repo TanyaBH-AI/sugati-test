@@ -32,15 +32,15 @@ export class ClientInfoPage {
   }
 
   async clickSearch(): Promise<void> {
-    // Scope to the form button row (contains "Add Details") to avoid Salesforce global search
-    const formButtonRow = this.page.locator('div').filter({
-      has: this.page.getByRole('button', { name: 'Add Details' })
-    }).first();
-    await formButtonRow.getByRole('button', { name: 'Search', exact: true }).click();
-    // After search, wait for either Save & Close or Save & Next (depends on match results)
+    // The form Search button is the last Search button on the page
+    // (the global search in the header is first in DOM order)
+    const searchButtons = this.page.getByRole('button', { name: 'Search', exact: true });
+    await searchButtons.last().click();
+    // After search with random names: wait for either Save & Close or Save & Next or Clear Search
     await expect(
       this.page.getByRole('button', { name: 'Save & Close', exact: true })
-        .or(this.page.getByRole('button', { name: 'Save & Next', exact: true }))
+        .or(this.page.getByRole('button', { name: 'Save & Next', exact: true })
+        .or(this.page.getByRole('button', { name: 'Clear Search', exact: true })))
     ).toBeVisible({ timeout: 15000 });
   }
 

@@ -7,39 +7,16 @@ export class ClientInfoPage {
     this.page = page;
   }
 
-  /**
-   * Fill the Salutation field.
-   * In Salesforce Lightning, this renders as a lightning-combobox (not a native <select>).
-   * Strategy: click the combobox trigger to open the dropdown, then select the option
-   * using an exact-text match on the listbox item to avoid matching "Mrs." or "Mr.".
-   * Falls back to native <select> if a lightning-combobox is not found.
-   */
   async fillSalutation(value: string): Promise<void> {
-    // Strategy 1: Lightning combobox (most likely in Lightning Experience)
-    const lightningCombobox = this.page.locator('lightning-combobox, lightning-grouped-combobox').first();
-    const nativeSelect = this.page.locator('select').first();
-
-    // Check which element type is present
-    const isLightningCombobox = await lightningCombobox.isVisible({ timeout: 5000 }).catch(() => false);
-
-    if (isLightningCombobox) {
-      // Click the combobox trigger (button or input) to open the dropdown
-      await lightningCombobox.locator('button, input').first().click();
-
-      // Wait for the dropdown listbox to appear and select the exact option
-      // Use role="option" with exact text to avoid matching "Mrs." when selecting "Mr"
-      const option = this.page.locator('lightning-base-combobox-item').filter({
-        has: this.page.locator(`span.slds-truncate`, { hasText: new RegExp(`^${value}$`) })
-      }).first();
-      await expect(option).toBeVisible({ timeout: 10000 });
-      await option.click();
-    } else {
-      // Strategy 2: Native <select> fallback
-      await expect(nativeSelect).toBeVisible({ timeout: 15000 });
-      // Wait for options to load
-      await nativeSelect.locator('option:nth-child(2)').waitFor({ state: 'attached', timeout: 15000 });
-      await nativeSelect.selectOption({ label: value });
-    }
+    // The salutation is a native <select name="salutation"> with slds-select class.
+    // Option values include a trailing period (e.g. "Mr.", "Ms.", "Mrs.", "Dr.", "Prof.").
+    const salutationSelect = this.page.locator('select[name="salutation"]');
+    await expect(salutationSelect).toBeVisible({ timeout: 15000 });
+    // Wait for options to populate (first real option after the blank placeholder)
+    await salutationSelect.locator('option:nth-child(2)').waitFor({ state: 'attached', timeout: 20000 });
+    // Normalize: append period if caller passed "Mr" instead of "Mr."
+    const normalizedValue = value.endsWith('.') ? value : `${value}.`;
+    await salutationSelect.selectOption({ value: normalizedValue });
   }
 
   async fillFirstName(name: string): Promise<void> {

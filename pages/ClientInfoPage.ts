@@ -32,7 +32,8 @@ export class ClientInfoPage {
   }
 
   async clickSearch(): Promise<void> {
-    await this.page.locator('button.search-button').click();
+    // The form's Search button is the last one on the page (below the header global search)
+    await this.page.getByRole('button', { name: 'Search', exact: true }).last().click();
     await expect(this.page.getByRole('button', { name: 'Save & Close', exact: true })).toBeVisible({ timeout: 15000 });
   }
 

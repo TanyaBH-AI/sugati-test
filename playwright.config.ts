@@ -13,7 +13,8 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://sugatidevqa-dev-ed.lightning.force.com/',
     headless: true,
     screenshot: 'only-on-failure',
-    trace: 'retain-on-failure',
+    video: 'on',
+    trace: 'on-first-retry',
   },
   projects: [
     {

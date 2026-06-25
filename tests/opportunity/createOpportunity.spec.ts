@@ -53,7 +53,8 @@ test.describe('Opportunity Creation — Holiday Enquiry V2', () => {
     // Step 9: Click search button
     await clientInfoPage.clickSearch();
 
-    // Step 10: Click save and next
+    // Step 10: Save client and proceed to opportunity form
+    await clientInfoPage.clickSaveAndClose();
     await clientInfoPage.clickSaveAndNext();
 
     // Step 11: Opportunity page should be visible

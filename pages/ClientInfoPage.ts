@@ -36,6 +36,14 @@ export class ClientInfoPage {
     await expect(this.page.locator('button:has-text("Save & Close")')).toBeVisible({ timeout: 15000 });
   }
 
+  async clickSaveAndClose(): Promise<void> {
+    const saveCloseBtn = this.page.locator('button:has-text("Save & Close")');
+    await expect(saveCloseBtn).toBeVisible({ timeout: 15000 });
+    await saveCloseBtn.click();
+    // Wait for Save & Next to confirm the panel closed
+    await expect(this.page.locator('button:has-text("Save & Next")')).toBeVisible({ timeout: 15000 });
+  }
+
   async clickSaveAndNext(): Promise<void> {
     const saveNextBtn = this.page.locator('button:has-text("Save & Next")');
     await expect(saveNextBtn).toBeVisible({ timeout: 15000 });

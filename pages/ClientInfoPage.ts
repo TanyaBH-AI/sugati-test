@@ -7,37 +7,38 @@ export class ClientInfoPage {
     this.page = page;
   }
 
+  /**
+   * Fill the Salutation field.
+   * In Salesforce Lightning, this renders as a lightning-combobox (not a native <select>).
+   * Strategy: click the combobox trigger to open the dropdown, then select the option
+   * using an exact-text match on the listbox item to avoid matching "Mrs." or "Mr.".
+   * Falls back to native <select> if a lightning-combobox is not found.
+   */
   async fillSalutation(value: string): Promise<void> {
-    const salutationSelect = this.page.locator('select').first();
-    await expect(salutationSelect).toBeVisible({ timeout: 15000 });
+    // Strategy 1: Lightning combobox (most likely in Lightning Experience)
+    const lightningCombobox = this.page.locator('lightning-combobox, lightning-grouped-combobox').first();
+    const nativeSelect = this.page.locator('select').first();
 
-    // Attempt 3: Wait for ANY options to load (not a specific label),
-    // then discover what's available and pick the best match.
-    // The first <option> is typically a blank placeholder, so wait for a 2nd.
-    await salutationSelect.locator('option:nth-child(2)').waitFor({ state: 'attached', timeout: 20000 }).catch(async () => {
-      // If no native options appear, this might be a lightning-combobox.
-      // Click to open and select from the rendered dropdown list.
-      await salutationSelect.click();
-      const option = this.page.locator(`lightning-base-combobox-item span[title="${value}"]`).first();
-      await option.waitFor({ timeout: 10000 });
+    // Check which element type is present
+    const isLightningCombobox = await lightningCombobox.isVisible({ timeout: 5000 }).catch(() => false);
+
+    if (isLightningCombobox) {
+      // Click the combobox trigger (button or input) to open the dropdown
+      await lightningCombobox.locator('button, input').first().click();
+
+      // Wait for the dropdown listbox to appear and select the exact option
+      // Use role="option" with exact text to avoid matching "Mrs." when selecting "Mr"
+      const option = this.page.locator('lightning-base-combobox-item').filter({
+        has: this.page.locator(`span.slds-truncate`, { hasText: new RegExp(`^${value}$`) })
+      }).first();
+      await expect(option).toBeVisible({ timeout: 10000 });
       await option.click();
-      return;
-    });
-
-    // Log all available options for diagnostics
-    const allOptions = await salutationSelect.locator('option').allTextContents();
-    console.log(`[fillSalutation] Available options: ${JSON.stringify(allOptions)}`);
-
-    // Try exact label match first, then partial match, then index fallback
-    const exactMatch = allOptions.find(o => o.trim() === value);
-    const partialMatch = allOptions.find(o => o.trim().startsWith(value));
-    if (exactMatch) {
-      await salutationSelect.selectOption({ label: exactMatch });
-    } else if (partialMatch) {
-      await salutationSelect.selectOption({ label: partialMatch });
-    } else if (allOptions.length > 1) {
-      // Fallback: select first non-empty option
-      await salutationSelect.selectOption({ index: 1 });
+    } else {
+      // Strategy 2: Native <select> fallback
+      await expect(nativeSelect).toBeVisible({ timeout: 15000 });
+      // Wait for options to load
+      await nativeSelect.locator('option:nth-child(2)').waitFor({ state: 'attached', timeout: 15000 });
+      await nativeSelect.selectOption({ label: value });
     }
   }
 

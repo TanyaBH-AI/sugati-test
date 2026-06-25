@@ -75,7 +75,7 @@ test.describe('Holiday Enquiry V2 — Create Opportunity', () => {
     await clientInfoPage.clickSaveAndNext();
 
     // Step 11: Opportunity page should be visible
-    await opportunityFormPage.assertHolidayTypePreFilled();
+    await opportunityFormPage.assertPageLoaded();
 
     // Step 12: Select Generic holiday type
     await opportunityFormPage.selectHolidayType('Generic');

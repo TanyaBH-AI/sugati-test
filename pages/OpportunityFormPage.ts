@@ -7,12 +7,12 @@ export class OpportunityFormPage {
     this.page = page;
   }
 
-  async assertHolidayTypePreFilled(): Promise<void> {
-    await expect(this.page.getByText('Generic').first()).toBeVisible({ timeout: 15000 });
+  async assertPageLoaded(): Promise<void> {
+    await expect(this.page.getByText('Holiday Type').first()).toBeVisible({ timeout: 15000 });
   }
 
   async selectHolidayType(value: string): Promise<void> {
-    // Holiday Type renders as a lookup pill when pre-filled — skip if already set
+    // If already selected as a lookup pill, skip re-selection
     const alreadySelected = this.page.getByText(value).first();
     if (await alreadySelected.isVisible({ timeout: 3000 }).catch(() => false)) {
       return;

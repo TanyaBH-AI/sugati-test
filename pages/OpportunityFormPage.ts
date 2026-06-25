@@ -8,7 +8,7 @@ export class OpportunityFormPage {
   }
 
   async assertHolidayTypePreFilled(): Promise<void> {
-    await expect(this.page.locator('input[value*="Generic" i]')).toBeVisible({ timeout: 15000 });
+    await expect(this.page.locator('lightning-combobox').filter({ hasText: /holiday type/i }).first()).toBeVisible({ timeout: 15000 });
   }
 
   async selectHolidayType(value: string): Promise<void> {

@@ -28,9 +28,9 @@ function addDays(dateStr: string, days: number): string {
   const [mm, dd, yyyy] = dateStr.split('/').map(Number);
   const date = new Date(yyyy, mm - 1, dd);
   date.setDate(date.getDate() + days);
-  const rMm = String(date.getMonth() + 1).padStart(2, '0');
-  const rDd = String(date.getDate()).padStart(2, '0');
-  return `${rMm}/${rDd}/${date.getFullYear()}`;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 test.describe('Create Holiday Enquiry - Individual', () => {

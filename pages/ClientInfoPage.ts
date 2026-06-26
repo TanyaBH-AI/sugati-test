@@ -8,11 +8,20 @@ export class ClientInfoPage {
   }
 
   async fillSalutation(value: string): Promise<void> {
-    const salutationSelect = this.page.locator('select[name="salutation"]');
-    await expect(salutationSelect).toBeVisible({ timeout: 15000 });
-    await salutationSelect.locator('option:nth-child(2)').waitFor({ state: 'attached', timeout: 20000 });
     const normalizedValue = value.endsWith('.') ? value : `${value}.`;
-    await salutationSelect.selectOption({ value: normalizedValue });
+    // Try native <select> first (standard Salesforce salutation)
+    const nativeSelect = this.page.locator('select').first();
+    const isNative = await nativeSelect.isVisible({ timeout: 5000 }).catch(() => false);
+
+    if (isNative) {
+      await nativeSelect.selectOption({ label: normalizedValue });
+    } else {
+      // Lightning combobox fallback
+      const combobox = this.page.locator('lightning-combobox').filter({ hasText: /salutation/i }).first();
+      await expect(combobox).toBeVisible({ timeout: 15000 });
+      await combobox.locator('button, input').first().click();
+      await this.page.locator('lightning-base-combobox-item span.slds-truncate').filter({ hasText: value }).first().click();
+    }
   }
 
   async fillFirstName(name: string): Promise<void> {

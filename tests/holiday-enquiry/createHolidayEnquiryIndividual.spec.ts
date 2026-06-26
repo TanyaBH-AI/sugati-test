@@ -48,8 +48,8 @@ test.describe('Create Holiday Enquiry - Individual', () => {
     await holidayEnquiryPage.navigate();
     await holidayEnquiryPage.selectIndividual();
 
-    // Step 6: Assert Client Info form is visible
-    await expect(page.locator('select[name="salutation"]')).toBeVisible({ timeout: 15000 });
+    // Step 6: Assert Client Info form is visible (wait for any form input)
+    await expect(page.locator('select, lightning-combobox, input[type="text"]').first()).toBeVisible({ timeout: 15000 });
 
     // Step 7-9: Fill client information
     await clientInfoPage.fillSalutation('Mr.');

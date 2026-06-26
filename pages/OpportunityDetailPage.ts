@@ -8,13 +8,11 @@ export class OpportunityDetailPage {
   }
 
   async assertPageLoaded(): Promise<void> {
-    // .slds-page-header__name-title is only rendered on Salesforce Lightning
-    // standard record-detail pages (/lightning/r/...) — not on wizard/form pages.
-    // This avoids the strict-mode violation caused by broad OR locators that
-    // match the global app h1 and other page-header elements simultaneously.
-    await expect(
-      this.page.locator('.slds-page-header__name-title')
-    ).toBeVisible({ timeout: 20000 });
+    // URL-based assertion: Salesforce Opportunity record URLs contain /lightning/r/Opportunity/
+    // This is more reliable than DOM class selectors which vary by org/component version.
+    await this.page.waitForURL(/\/lightning\/r\/Opportunity\//i, { timeout: 30000 });
+    // Additional visible-element check to confirm page content has rendered
+    await expect(this.page.locator('.slds-page-header').first()).toBeVisible({ timeout: 10000 });
   }
 
   async assertAccountName(firstName: string, lastName: string): Promise<void> {

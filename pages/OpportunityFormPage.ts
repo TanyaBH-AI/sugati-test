@@ -57,8 +57,9 @@ export class OpportunityFormPage {
     const combobox = this.page.locator('lightning-combobox').filter({ hasText: /currency/i }).first();
     if (await combobox.isVisible({ timeout: 5000 }).catch(() => false)) {
       await combobox.locator('button, input').first().click();
-      await this.page.locator('lightning-base-combobox-item span.slds-truncate')
-        .filter({ hasText: currency }).first().click({ timeout: 10000 });
+      // Wait for options to render, then click via role (shadow-DOM-safe)
+      await expect(this.page.getByRole('option').first()).toBeVisible({ timeout: 10000 });
+      await this.page.getByRole('option', { name: currency, exact: true }).click({ timeout: 10000 });
       return;
     }
 
@@ -68,16 +69,22 @@ export class OpportunityFormPage {
   }
 
   async fillDepartureDate(date: string): Promise<void> {
+    // date arrives as MM/DD/YYYY; Salesforce datepicker expects D MMM YYYY (e.g. "3 Aug 2026")
+    const [mm, dd, yyyy] = date.split('/').map(Number);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    const sfDate = `${dd} ${months[mm - 1]} ${yyyy}`;
+
     const dateInput = this.page.locator('lightning-datepicker input').nth(0);
     if (await dateInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await dateInput.fill(date);
+      await dateInput.fill(sfDate);
       await dateInput.press('Tab');
       return;
     }
     const fallback = this.page.locator('.slds-form-element').filter({ hasText: /Departure Date/i })
       .locator('input').first();
     await expect(fallback).toBeVisible({ timeout: 15000 });
-    await fallback.fill(date);
+    await fallback.fill(sfDate);
     await fallback.press('Tab');
   }
 
@@ -111,5 +118,9 @@ export class OpportunityFormPage {
     await expect(
       this.page.getByRole('button', { name: 'Save & Next', exact: true })
     ).toBeEnabled({ timeout: 15000 });
+  }
+
+  async clickSaveAndNext(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Save & Next', exact: true }).click();
   }
 }

@@ -3,6 +3,8 @@ import { LoginPage } from '../../pages/LoginPage';
 import { HolidayEnquiryPage } from '../../pages/HolidayEnquiryPage';
 import { ClientInfoPage } from '../../pages/ClientInfoPage';
 import { OpportunityFormPage } from '../../pages/OpportunityFormPage';
+import { GroupMembersPage } from '../../pages/GroupMembersPage';
+import { OpportunityDetailPage } from '../../pages/OpportunityDetailPage';
 
 const STAGING_USER = process.env.STAGING_USER || '';
 const STAGING_PASSWORD = process.env.STAGING_PASSWORD || '';
@@ -38,12 +40,16 @@ test.describe('Create Holiday Enquiry - Individual', () => {
   let holidayEnquiryPage: HolidayEnquiryPage;
   let clientInfoPage: ClientInfoPage;
   let opportunityFormPage: OpportunityFormPage;
+  let groupMembersPage: GroupMembersPage;
+  let opportunityDetailPage: OpportunityDetailPage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     holidayEnquiryPage = new HolidayEnquiryPage(page);
     clientInfoPage = new ClientInfoPage(page);
     opportunityFormPage = new OpportunityFormPage(page);
+    groupMembersPage = new GroupMembersPage(page);
+    opportunityDetailPage = new OpportunityDetailPage(page);
   });
 
   test('should create a holiday enquiry for an individual client', async ({ page }) => {
@@ -101,5 +107,27 @@ test.describe('Create Holiday Enquiry - Individual', () => {
 
     // Step 12: Verify Save & Next button is enabled on Opportunity form
     await opportunityFormPage.assertSaveAndNextEnabled();
+
+    // Step 13: Click Save & Next on the Opportunity form
+    await opportunityFormPage.clickSaveAndNext();
+
+    // Step 14 & 15: Wait for Group Members page and verify its title is displayed
+    await groupMembersPage.assertPageLoaded();
+
+    // Step 16: Click Save & Go to Opportunity
+    await groupMembersPage.clickSaveAndGoToOpportunity();
+
+    // Step 17: Verify the Opportunity detail page is displayed
+    await opportunityDetailPage.assertPageLoaded();
+
+    // Step 18: Verify Details section fields
+    await opportunityDetailPage.assertAccountName(firstName, lastName);
+    await opportunityDetailPage.assertType('Individual');
+    await opportunityDetailPage.assertStage('Enquiry');
+
+    // Step 19: Verify Holiday Details section fields (loose date assertions — ignore display format)
+    await opportunityDetailPage.assertDepartureDate(departureDate);
+    await opportunityDetailPage.assertReturnDate(returnDate);
+    await opportunityDetailPage.assertHolidayType('Generic');
   });
 });

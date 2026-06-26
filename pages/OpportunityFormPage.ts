@@ -119,4 +119,8 @@ export class OpportunityFormPage {
       this.page.getByRole('button', { name: 'Save & Next', exact: true })
     ).toBeEnabled({ timeout: 15000 });
   }
+
+  async clickSaveAndNext(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Save & Next', exact: true }).click();
+  }
 }

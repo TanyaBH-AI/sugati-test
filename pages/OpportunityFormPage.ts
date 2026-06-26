@@ -72,7 +72,7 @@ export class OpportunityFormPage {
     // date arrives as MM/DD/YYYY; Salesforce datepicker expects D MMM YYYY (e.g. "3 Aug 2026")
     const [mm, dd, yyyy] = date.split('/').map(Number);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     const sfDate = `${dd} ${months[mm - 1]} ${yyyy}`;
 
     const dateInput = this.page.locator('lightning-datepicker input').nth(0);

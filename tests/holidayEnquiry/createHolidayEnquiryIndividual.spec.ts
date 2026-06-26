@@ -29,7 +29,7 @@ function addDays(dateStr: string, days: number): string {
   const date = new Date(yyyy, mm - 1, dd);
   date.setDate(date.getDate() + days);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                   'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
   return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 

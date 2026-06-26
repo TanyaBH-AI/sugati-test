@@ -12,39 +12,33 @@ export class OpportunityFormPage {
   }
 
   async selectHolidayType(value: string): Promise<void> {
-    // Holiday Type is a lookup/pill field (not a lightning-combobox).
-    // Pre-selected values render as an SLDS pill that may take time to hydrate.
-    const pill = this.page.locator('.slds-pill').filter({ hasText: value }).first();
-    try {
-      await expect(pill).toBeVisible({ timeout: 10000 });
-      return; // Already selected
-    } catch {
-      // Not pre-selected as pill — try other detection
-    }
-
-    // Fallback: check via field section text (non-pill text match)
+    // Holiday Type is a lookup/pill field. When pre-selected, the input has
+    // aria-readonly="true" and data-value set to the selected value.
     const fieldSection = this.page.locator('.slds-form-element, [class*="form-element"]')
       .filter({ hasText: /Holiday Type/i }).first();
-    const pillWithValue = fieldSection.getByText(value, { exact: true });
-    if (await pillWithValue.isVisible({ timeout: 3000 }).catch(() => false)) {
-      return;
+    await expect(fieldSection).toBeVisible({ timeout: 15000 });
+
+    // Check if already selected via data-value attribute on the input
+    const inputWithValue = fieldSection.locator(`input[data-value="${value}"]`);
+    if (await inputWithValue.isVisible({ timeout: 5000 }).catch(() => false)) {
+      return; // Already selected
     }
 
-    // Value not selected — try lookup/grouped-combobox input
-    const lookupInput = fieldSection.locator('input').first();
-    if (await lookupInput.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await lookupInput.click();
-      await lookupInput.fill(value);
+    // Also check for readonly input (value may be set even if data-value format differs)
+    const readonlyInput = fieldSection.locator('input[aria-readonly="true"]');
+    if (await readonlyInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      const dataVal = await readonlyInput.getAttribute('data-value');
+      if (dataVal && dataVal.toLowerCase() === value.toLowerCase()) {
+        return; // Already selected
+      }
+    }
+
+    // Not selected — use editable input to search and select
+    const editableInput = fieldSection.locator('input:not([aria-readonly="true"])').first();
+    if (await editableInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await editableInput.click();
+      await editableInput.fill(value);
       await this.page.getByRole('option', { name: new RegExp(value, 'i') }).first().click({ timeout: 10000 });
-      return;
-    }
-
-    // Last resort: lightning-combobox (unlikely for this field)
-    const combobox = this.page.locator('lightning-combobox').filter({ hasText: /holiday type/i }).first();
-    if (await combobox.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await combobox.locator('button, input').first().click();
-      await this.page.locator('lightning-base-combobox-item span.slds-truncate')
-        .filter({ hasText: value }).first().click({ timeout: 10000 });
     }
   }
 

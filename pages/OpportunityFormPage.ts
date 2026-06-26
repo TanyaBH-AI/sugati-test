@@ -57,8 +57,9 @@ export class OpportunityFormPage {
     const combobox = this.page.locator('lightning-combobox').filter({ hasText: /currency/i }).first();
     if (await combobox.isVisible({ timeout: 5000 }).catch(() => false)) {
       await combobox.locator('button, input').first().click();
-      await this.page.locator('lightning-base-combobox-item span.slds-truncate')
-        .filter({ hasText: currency }).first().click({ timeout: 10000 });
+      // Wait for options to render, then click via role (shadow-DOM-safe)
+      await expect(this.page.getByRole('option').first()).toBeVisible({ timeout: 10000 });
+      await this.page.getByRole('option', { name: currency, exact: true }).click({ timeout: 10000 });
       return;
     }
 

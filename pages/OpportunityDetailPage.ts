@@ -8,12 +8,12 @@ export class OpportunityDetailPage {
   }
 
   async assertPageLoaded(): Promise<void> {
-    // TODO: verify selector — wait for Opportunity detail page to render
-    // Lightning record pages typically show the record name in an h1
+    // .slds-page-header__name-title is only rendered on Salesforce Lightning
+    // standard record-detail pages (/lightning/r/...) — not on wizard/form pages.
+    // This avoids the strict-mode violation caused by broad OR locators that
+    // match the global app h1 and other page-header elements simultaneously.
     await expect(
-      this.page.getByRole('heading', { level: 1 }).or(
-        this.page.locator('.slds-page-header, [class*="page-header"]').first()
-      )
+      this.page.locator('.slds-page-header__name-title')
     ).toBeVisible({ timeout: 20000 });
   }
 

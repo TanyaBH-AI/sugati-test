@@ -7,6 +7,8 @@
     "test:headed": "npx playwright test --headed"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0"
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3"
   }
 }

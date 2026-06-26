@@ -117,6 +117,12 @@ test.describe('Create Holiday Enquiry - Individual', () => {
     // Step 16: Click Save & Go to Opportunity
     await groupMembersPage.clickSaveAndGoToOpportunity();
 
+    // Step 16a: AB-36 workaround — dismiss the "List index out of bounds: 0" error toast
+    await groupMembersPage.dismissErrorToast();
+
+    // Step 16b: Click "Save & Opportunity" to continue after toast dismissal
+    await groupMembersPage.clickSaveAndOpportunity();
+
     // Step 17: Verify the Opportunity detail page is displayed
     await opportunityDetailPage.assertPageLoaded();
 

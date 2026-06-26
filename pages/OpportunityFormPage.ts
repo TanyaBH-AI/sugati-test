@@ -69,16 +69,22 @@ export class OpportunityFormPage {
   }
 
   async fillDepartureDate(date: string): Promise<void> {
+    // date arrives as MM/DD/YYYY; Salesforce datepicker expects D MMM YYYY (e.g. "3 Aug 2026")
+    const [mm, dd, yyyy] = date.split('/').map(Number);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const sfDate = `${dd} ${months[mm - 1]} ${yyyy}`;
+
     const dateInput = this.page.locator('lightning-datepicker input').nth(0);
     if (await dateInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await dateInput.fill(date);
+      await dateInput.fill(sfDate);
       await dateInput.press('Tab');
       return;
     }
     const fallback = this.page.locator('.slds-form-element').filter({ hasText: /Departure Date/i })
       .locator('input').first();
     await expect(fallback).toBeVisible({ timeout: 15000 });
-    await fallback.fill(date);
+    await fallback.fill(sfDate);
     await fallback.press('Tab');
   }
 

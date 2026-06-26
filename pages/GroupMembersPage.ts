@@ -23,25 +23,23 @@ export class GroupMembersPage {
   async dismissErrorToast(): Promise<void> {
     // AB-36: clicking "Save & Go to Opportunity" throws a "List index out of bounds: 0" error toast.
     // Wait for the toast to appear, then close it so we can proceed.
-    // TODO: verify selector — Salesforce Lightning toasts use .slds-notify or role="alert"
-    const toast = this.page.locator('.slds-notify_toast, .slds-notify--toast, .toastMessage')
-      .or(this.page.getByRole('alert').first());
-    await expect(toast.first()).toBeVisible({ timeout: 10000 });
+    const toast = this.page.locator('.slds-notify_toast, .slds-notify--toast, [role="alert"]').first();
+    const toastVisible = await toast.isVisible({ timeout: 10000 }).catch(() => false);
+    if (!toastVisible) return; // No toast — nothing to dismiss
 
-    // Click the close (✕) button on the toast
-    // TODO: verify selector — close button is typically aria-label="Close" or title="Close" inside the toast container
-    const closeBtn = this.page.locator('.slds-notify_toast button[title="Close"], .slds-notify--toast button[title="Close"]')
-      .or(this.page.locator('[role="alert"] button[title="Close"]'))
-      .or(this.page.getByRole('button', { name: 'Close', exact: true }).filter({ has: this.page.locator('[class*="notify"]') }));
-    if (await closeBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-      await closeBtn.first().click();
+    // .slds-notify__close is the canonical Salesforce Lightning toast close button class.
+    // The button is in the DOM but may not pass Playwright's visibility check due to
+    // shadow DOM or CSS layering — use { force: true } to click it regardless.
+    const closeBtn = this.page.locator('.slds-notify__close').first();
+    if (await closeBtn.count() > 0) {
+      await closeBtn.click({ force: true });
     } else {
-      // Fallback: click whichever Close button is visible near the toast area
-      await this.page.locator('button[title="Close"]').first().click();
+      // Fallback: press Escape to dismiss the toast
+      await this.page.keyboard.press('Escape');
     }
 
     // Wait for the toast to disappear before continuing
-    await expect(toast.first()).not.toBeVisible({ timeout: 8000 }).catch(() => {/* toast may have already gone */});
+    await expect(toast).not.toBeVisible({ timeout: 8000 }).catch(() => {/* toast may have already gone */});
   }
 
   async clickSaveAndOpportunity(): Promise<void> {

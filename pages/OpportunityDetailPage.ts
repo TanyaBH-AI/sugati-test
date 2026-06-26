@@ -25,7 +25,7 @@ export class OpportunityDetailPage {
 
   async assertType(expectedType: string): Promise<void> {
     const typeField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /^Type$/i }).first()
+      .filter({ hasText: /^Type/i }).first()
       .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(typeField).toContainText(expectedType, { timeout: 15000 });
   }
@@ -38,9 +38,9 @@ export class OpportunityDetailPage {
   }
 
   async assertDepartureDate(departureDateMMDDYYYY: string): Promise<void> {
-    // departureDateMMDDYYYY is MM/DD/YYYY. Salesforce detail view displays as M/D/YYYY.
+    // departureDateMMDDYYYY is MM/DD/YYYY. Salesforce org uses DD/MM/YYYY locale.
     const [mm, dd, yyyy] = departureDateMMDDYYYY.split('/');
-    const displayDate = `${parseInt(mm)}/${parseInt(dd)}/${yyyy}`;
+    const displayDate = `${dd}/${mm}/${yyyy}`;
     const departureField = this.page.locator('.slds-form-element, [class*="form-element"]')
       .filter({ hasText: /Departure Date/i }).first()
       .locator('.slds-form-element__static, .slds-form-element__control').first();
@@ -58,7 +58,8 @@ export class OpportunityDetailPage {
     const day = parseInt(parts[0]);
     const month = sfMonths[parts[1]] ?? 0;
     const year = parts[2];
-    const displayDate = `${month}/${day}/${year}`;
+    // Salesforce org uses DD/MM/YYYY locale — zero-pad day and month.
+    const displayDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
     const returnField = this.page.locator('.slds-form-element, [class*="form-element"]')
       .filter({ hasText: /Return Date/i }).first()
       .locator('.slds-form-element__static, .slds-form-element__control').first();

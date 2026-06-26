@@ -24,16 +24,27 @@ export class OpportunityDetailPage {
   }
 
   async assertType(expectedType: string): Promise<void> {
-    const typeField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /^Type/i }).first()
-      .locator('.slds-form-element__static, .slds-form-element__control').first();
+    // Target the form element whose label is exactly the 'Type' picklist —
+    // NOT 'Holiday Type' or 'Opportunity Record Type' (both also contain 'Type').
+    // Filter via the child label element to exclude 'Record' and 'Holiday' words.
+    const typeField = this.page
+      .locator('.slds-form-element')
+      .filter({
+        has: this.page.locator('.slds-form-element__label')
+          .filter({ hasText: 'Type' })
+          .filter({ hasNotText: /Record|Holiday/ }),
+      })
+      .first();
     await expect(typeField).toContainText(expectedType, { timeout: 15000 });
   }
 
   async assertStage(expectedStage: string): Promise<void> {
-    const stageField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Stage/i }).first()
-      .locator('.slds-form-element__static, .slds-form-element__control').first();
+    // Scope to .slds-form-element containers only; assert on the element directly
+    // to be resilient across picklist component variations
+    const stageField = this.page
+      .locator('.slds-form-element')
+      .filter({ hasText: /\bStage\b/ })
+      .first();
     await expect(stageField).toContainText(expectedStage, { timeout: 15000 });
   }
 

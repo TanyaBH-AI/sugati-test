@@ -11,7 +11,7 @@ export class HolidayEnquiryPage {
 
   async navigate(): Promise<void> {
     await this.page.goto(`${BASE_URL}/lightning/n/sugati_qa__Holiday_Enquiry_V2`, {
-      waitUntil: 'load',
+      waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
     await expect(this.page.getByText('Booking Type')).toBeVisible({ timeout: 30000 });

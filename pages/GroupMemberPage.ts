@@ -13,6 +13,6 @@ export class GroupMemberPage {
 
   async clickSaveAndGoToOpportunity(): Promise<void> {
     await this.page.getByRole('button', { name: 'Save & Go to Opportunity', exact: true }).click();
-    await this.page.waitForURL(/\/Opportunity\//, { timeout: 30000 });
+    await this.page.waitForURL(/\/Opportunity\//, { timeout: 30000, waitUntil: 'domcontentloaded' });
   }
 }

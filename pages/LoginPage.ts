@@ -70,7 +70,7 @@ export class LoginPage {
       const sessionId = await this.getSalesforceSessionId(username, password);
       // frontdoor.jsp exchanges a valid session ID for a browser session — no MFA prompt
       await this.page.goto(`${BASE_URL}/secur/frontdoor.jsp?sid=${sessionId}`, {
-        waitUntil: 'load',
+        waitUntil: 'domcontentloaded',
         timeout: 60000,
       });
     } catch {
@@ -83,7 +83,7 @@ export class LoginPage {
 
   async assertLoginSuccess(): Promise<void> {
     // frontdoor.jsp navigates directly to Lightning; URL will contain lightning.force.com
-    await this.page.waitForURL(/.*lightning\.force\.com.*/, { timeout: 60000 });
+    await this.page.waitForURL(/.*lightning\.force\.com.*/, { timeout: 60000, waitUntil: 'domcontentloaded' });
     await expect(this.page).toHaveURL(/.*lightning\.force\.com.*/);
   }
 

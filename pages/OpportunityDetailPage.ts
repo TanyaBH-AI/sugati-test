@@ -16,42 +16,40 @@ export class OpportunityDetailPage {
   }
 
   async assertAccountName(firstName: string, lastName: string): Promise<void> {
-    // Account Name on Opportunity detail combines First + Last with a space
-    // TODO: verify selector — field may render in lightning-formatted-text or a span
+    // Scope into the value element: label is in __label, value is in __static or __control
     const accountNameField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Account Name/i }).first();
+      .filter({ hasText: /Account Name/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(accountNameField).toContainText(`${firstName} ${lastName}`, { timeout: 15000 });
   }
 
   async assertType(expectedType: string): Promise<void> {
-    // TODO: verify selector
     const typeField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /^Type$/i }).first();
+      .filter({ hasText: /^Type$/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(typeField).toContainText(expectedType, { timeout: 15000 });
   }
 
   async assertStage(expectedStage: string): Promise<void> {
-    // TODO: verify selector
     const stageField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Stage/i }).first();
+      .filter({ hasText: /Stage/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(stageField).toContainText(expectedStage, { timeout: 15000 });
   }
 
   async assertDepartureDate(departureDateMMDDYYYY: string): Promise<void> {
-    // departureDateMMDDYYYY is MM/DD/YYYY. Salesforce detail view typically
-    // displays as M/D/YYYY — strip leading zeros for a loose match.
-    // TODO: verify selector and date display format on live UI
+    // departureDateMMDDYYYY is MM/DD/YYYY. Salesforce detail view displays as M/D/YYYY.
     const [mm, dd, yyyy] = departureDateMMDDYYYY.split('/');
     const displayDate = `${parseInt(mm)}/${parseInt(dd)}/${yyyy}`;
     const departureField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Departure Date/i }).first();
+      .filter({ hasText: /Departure Date/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(departureField).toContainText(displayDate, { timeout: 15000 });
   }
 
   async assertReturnDate(returnDateDMonYYYY: string): Promise<void> {
     // returnDateDMonYYYY is "D Mon YYYY" (e.g. "20 Jun 2026") from the datepicker input.
     // Salesforce detail view displays as M/D/YYYY — convert for a loose match.
-    // TODO: verify selector and date display format on live UI
     const sfMonths: Record<string, number> = {
       Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
       Jul: 7, Aug: 8, Sept: 9, Oct: 10, Nov: 11, Dec: 12,
@@ -62,15 +60,15 @@ export class OpportunityDetailPage {
     const year = parts[2];
     const displayDate = `${month}/${day}/${year}`;
     const returnField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Return Date/i }).first();
+      .filter({ hasText: /Return Date/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(returnField).toContainText(displayDate, { timeout: 15000 });
   }
 
   async assertHolidayType(expectedType: string): Promise<void> {
-    // Holiday Type in Holiday Details section
-    // TODO: verify selector — field may be in a separate "Holiday Details" section
     const holidayTypeField = this.page.locator('.slds-form-element, [class*="form-element"]')
-      .filter({ hasText: /Holiday Type/i }).first();
+      .filter({ hasText: /Holiday Type/i }).first()
+      .locator('.slds-form-element__static, .slds-form-element__control').first();
     await expect(holidayTypeField).toContainText(expectedType, { timeout: 15000 });
   }
 }

@@ -27,9 +27,8 @@ async function openNewBookingForm(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'New', exact: true }).click();
 
   // Record-type selection modal
-  const modal = page.locator('[role="dialog"]').first();
+  const modal = page.locator('[role="dialog"]').filter({ hasText: 'Select a record type' }).first();
   await expect(modal).toBeVisible({ timeout: 20000 });
-  await modal.getByText('Booking', { exact: true }).click();
   await page.getByRole('button', { name: 'Next', exact: true }).click();
 
   // Wait for the form to load — Opportunity Name must be visible

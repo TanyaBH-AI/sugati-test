@@ -21,7 +21,7 @@ function closeDateFormatted(): string {
  */
 async function openNewBookingForm(page: Page): Promise<void> {
   await page.goto('/lightning/o/Opportunity/list?filterName=Recent');
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Click the New button in the list header
   await page.getByRole('button', { name: 'New', exact: true }).click();
@@ -129,7 +129,7 @@ test.describe('Booking Opportunities', () => {
 
     // Navigate back to the Opportunities list view
     await page.goto('/lightning/o/Opportunity/list?filterName=Recent');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Use the list search input to filter by the opportunity name.
     // Salesforce list-view search: button with label "Search this list" reveals an input.
